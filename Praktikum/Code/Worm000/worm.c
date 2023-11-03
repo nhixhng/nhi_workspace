@@ -62,11 +62,11 @@ int main(void) {
     // Here we start
     initializeCursesApplication();      /*@01*/                      // Init various settings of our application
 
-    msg_len = strlen(message_template);  /* @02*/                   // Compute length of our template
+    msg_len = strlen(message_template);  /* @02 String.h BIB = strlen(ch) zur längen bestimmung*/                   // Compute length of our template
 
     // Maximal LINES and COLS are set by curses for the current window size.
     // Check if the window is large enough to display our message
-    if ( LINES < min_rows /* @03 Zeilen*/       || COLS < msg_len /* @03 Spalten*/     ) {
+    if ( LINES < min_rows /* @03 Zeilen müssen Gröser als 3 sein*/       || COLS < msg_len /* @03 Spalten muss länger als meine Nachricht sein*/     ) {
         // Cleanup special curses settings and restore the normal terminal functionality
         cleanupCursesApp(); /*@04*/
         // Print a conventional error message via printf.
@@ -77,18 +77,18 @@ int main(void) {
         res_code = RES_FAILED;
     } else {
         // Center output
-        int mid_row = LINES /2;  /*@06 Zeilen durch zwei. da mittig)*/
-        int start_col = COLS /2; /*@06 Spalten durch zwei)*/
+        int mid_row = LINES /2;  /*@06 Zeilen durch zwei. da mittig auf dem Bildschirm)*/
+        int start_col = COLS /2 - msg_len/ 2 ; /*@06 Spalten durch zwei minus die Hälfte der Länge der Nachricht )*/
 
         // Write letter A to the top    left  corner of our display
-        move(0,0); /* @07*/        // Move to position
+        move(0,0); /* @07 Move(x,y)*/        // Move to position 
         addch('A'); /*@07*/       // Put character there
 
         // Write letter B to the top    right corner of our display
         // Use combination of move() and addch() functions
-        mvaddch(0, COLS -1, 'B');  /*@08 -1 weil wir von 0 auszählen */ 
+        mvaddch(0, COLS -1, 'B');  /*@08 -1 weil wir von 0 auszählen, mvaddch(y,x, Ausgabe) */ 
         // Write letter C to the bottom right corner of our display
-        mvaddch(LINES -1, COLS -1, 'C'); /*@09*/
+        mvaddch(LINES -1, COLS -1 , 'C'); /*@09*/
         // Write letter D to the bottom left  corner of our display
         mvaddch(LINES -1, 0, 'D'); /* @10*/
  
@@ -99,14 +99,14 @@ int main(void) {
         refresh(); /*@12 Änderungen aktualisieren*/
         
         // Wait for user to press a key
-        @13                   // make getch to be a blocking call
+        nodelay(stdscr, FALSE); /* @13*/                   // make getch to be a blocking call
         getch();
 
         // Set the result code to report success
         res_code = RES_OK;
 
         // Cleanup special curses settings and restore the normal terminal functionality
-        @14
+        cleanupCursesApp(); /*@14*/
     }
     return res_code;
 }
