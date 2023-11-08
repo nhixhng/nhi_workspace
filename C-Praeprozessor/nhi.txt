@@ -1,0 +1,13 @@
+#ifndef _NHI // Wenn Nhi definiert ist, definiere Nhi
+#define _NHI
+
+#undef NAME  // falls Name, Farbe und Person definiert ist, Vergiss diese Infos
+#undef FARBE
+#undef PERSON
+
+#define NAME Nhi // definiere Nhi und ihre Infos
+#define FARBE Blau
+#define PERSON Maxi
+
+#include "steckbrief.txt" //Erst hier includen, weil erst davor die Infos definiert wurde
+#endif
