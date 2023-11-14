@@ -351,6 +351,10 @@ void setWormHeading(int dir) {
 
 int main(void) {
     int res_code;         // Result code from functions
+    
+    //printf("press key to continue\n");
+    //getchar(); // start pogramm, give debugger a chance to attach, waits for eingabe
+
 
     // Here we start
     initializeCursesApplication();  // Init various settings of our application
