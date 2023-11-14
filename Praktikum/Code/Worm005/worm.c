@@ -248,7 +248,7 @@ void placeItem(int y, int x, chtype symbol, int color_pair) {
     //  Store item on the display (symbol code)
     move(y, x);                         // Move cursor to (y,x)
     attron(COLOR_PAIR(color_pair));     // Start writing in selected color
-    addch('0' /*@006*/);                      // Store symbol on the virtual display
+    addch(symbol /*@006*/);                      // Store symbol on the virtual display
     attroff(COLOR_PAIR(color_pair));    // Stop writing in selected color
 }
 
