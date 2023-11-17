@@ -128,10 +128,10 @@ void readUserInput(int* agame_state ) {
                 setWormHeading(WORM_RIGHT); /*@012*/
                 break;
             case 's' : // User wants single step
-                nodelay(stdscr,TRUE); //@013  We simply make getch blocking
+                nodelay(stdscr,FALSE); //@013  We simply make getch blocking
                 break;
             case ' ' : // Terminate single step; make getch non-blocking again
-                nodelay(stdscr,FALSE); // @013   Make getch non-blocking again
+                nodelay(stdscr,TRUE); // @013   Make getch non-blocking again
                 break;
         }
     }
@@ -160,7 +160,7 @@ int doLevel() {
     }
 
     // Show worm at its initial position
-    showWorm();
+
 
     // Display all what we have set up until now
     refresh();
@@ -308,11 +308,11 @@ void moveWorm(int* agame_state) {
     if (theworm_headpos_x < 0) {
         *agame_state = WORM_OUT_OF_BOUNDS;
     } else if (theworm_headpos_x > getLastCol() ) { 
-        *agame_state = WORM_GAME_ONGOING; /*@011*/
+        *agame_state = WORM_OUT_OF_BOUNDS; /*@011*/
     } else if (theworm_headpos_y < 0) {  
         *agame_state = WORM_OUT_OF_BOUNDS; /* @011*/
 	} else if (theworm_headpos_y > getLastRow() ) {
-        *agame_state = WORM_GAME_ONGOING; /*@011*/
+        *agame_state = WORM_OUT_OF_BOUNDS; /*@011*/
     } else {
         // We will stay within bounds.
         // So all is well
