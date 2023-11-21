@@ -52,6 +52,10 @@ enum WormHeading {
   WORM_DOWN,
   WORM_LEFT,
   WORM_RIGHT,
+  WORM_LEFT_UP,
+  WORM_RIGHT_UP,
+  WORM_LEFT_DOWN,
+  WORM_RIGHT_DOWN,
 };
 
 // ********************************************************************************************
@@ -133,6 +137,20 @@ void readUserInput(enum GameStates* agame_state ) {
             case KEY_RIGHT :// User wants right
                 setWormHeading(WORM_RIGHT); /*@012*/
                 break;
+
+            case 'w' : // schräg nach links oben
+                setWormHeading(WORM_LEFT_UP);
+                break;
+            case 'd' : // schräg nach rechts oben
+                setWormHeading(WORM_RIGHT_UP);
+                break;
+            case 'a' : // schräg links unten
+                setWormHeading(WORM_LEFT_DOWN);
+                break;
+            case 'x' : // schräg unten rechts
+                setWormHeading(WORM_RIGHT_DOWN);
+                break;
+
             case 's' : // User wants single step
                 nodelay(stdscr,FALSE); //@013  We simply make getch blocking
                 break;
@@ -344,6 +362,23 @@ void setWormHeading(enum WormHeading dir) {
         case WORM_RIGHT : // @005, User wants right
            theworm_dx=+1; // @005
            theworm_dy=0; // @005
+            break;
+
+        case WORM_LEFT_UP :
+            theworm_dx=-1;
+            theworm_dy=-1;
+            break;
+        case WORM_RIGHT_UP :
+            theworm_dx=+1;
+            theworm_dy=-1;
+            break;
+        case WORM_LEFT_DOWN :
+            theworm_dx=-1;
+            theworm_dy=+1;
+            break;
+        case WORM_RIGHT_DOWN :
+            theworm_dx=+1;
+            theworm_dy=+1;
             break;
     }
 } 
