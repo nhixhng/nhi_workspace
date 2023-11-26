@@ -39,9 +39,11 @@ enum ResCodes {         //Erstelle einen Neuen "Datentypen" , wobei RES_OK Autom
 // Numbers for color pairs used by curses macro COLOR_PAIR
 enum ColorPairs {
   COLP_USER_WORM = 1,
+  COLP_FREE_CELL,
 };
 
 // Symbols to display
+#define SYMBOL_FREE_CELL ' '
 #define SYMBOL_WORM_INNER_ELEMENT '0'
 
 // Game state codes
@@ -104,6 +106,7 @@ int getLastCol();
 // Functions concerning the management of the worm data
 enum ResCodes initializeWorm(int len_max, int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color);
 void showWorm();
+void cleanWormTail();
 void moveWorm(enum GameStates* agame_state);
 void setWormHeading(enum WormHeading dir);
 
@@ -120,6 +123,7 @@ void initializeColors() {
     // Define colors of the game
     start_color();
     init_pair(COLP_USER_WORM,    COLOR_GREEN /*@002*/,    COLOR_BLACK);
+    init_pair(COLP_FREE_CELL,    COLOR_BLACK,        ,    COLOR_BLACK);
 }
 
 void readUserInput(enum GameStates* agame_state ) {
@@ -207,6 +211,8 @@ enum ResCodes doLevel() {
         }
 
         // Process userworm
+        // Clean the tail of the worm
+        cleanWormTail();
         // Now move the worm for one step
         moveWorm(&game_state /*@015*/);
         // Bail out of the loop if something bad happened
@@ -304,28 +310,31 @@ int getLastCol() {
 
 // Initialize the worm
 enum ResCodes initializeWorm(int len_max /*maximale lange des Wurms*/, int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color) {
-   // Local variables for loops
+    // Local variables for loops
   
-   // Initialize last usable index to len_max -1
-   // theworm_maxindex
-   theworm_maxindex = len_max-1; //Weil beim Index zahlen auch bei 0 beginnt
+    // Initialize last usable index to len_max -1
+    // theworm_maxindex
+    theworm_maxindex = len_max-1; //Weil beim Index zahlen auch bei 0 beginnt
 
-   // Initalize headindex
-   // the worm_headindex
+    // Initalize headindex
+    // the worm_headindex
+    thewormhead_index = 0;
+
+    // Mark all elements as unused in the arrays of positions
+    // theworm_wormpos_y[] and thewormpos_x[]
+    // An unused position in the array is marked
+    // with code UNUSED_POS_ELEM
+    for (int i=0; i<= theworm_maxindex; i++)
+    {
+      theworm_wormpos_y[i]= UNUSED_POS_ELEM; // befülle das Array mit Unused, da wir noch nix befüllt haben
+      theworm_wormpos_x[i] = UNUSED_POS_ELEM;
+    }
+
    
-
-
-
-
-
-
-
-
-
-
     // Initialize position of worms head
-    theworm_headpos_y = headpos_y;
-    theworm_headpos_x = headpos_x; /* @008*/
+    theworm_headpos_y[theworm_headindex] = headpos_y; // das array an der stelle des Headindexes soll befüllt werden mit der y koordinate
+    theworm_headpos_x[thewormheadindex] = headpos_x;
+
     // Initialize the heading of the worm
     setWormHeading(dir); /* @009*/
 
@@ -340,9 +349,25 @@ void showWorm() {
     // Due to our encoding we just need to show the head element
     // All other elements are already displayed
     placeItem(
-            theworm_headpos_y ,
-            theworm_headpos_x /* @007*/,
+            theworm_headpos_y[theworm_headindex] ,
+            theworm_headpos_x[theworm_headindex] /* @007*/,
             SYMBOL_WORM_INNER_ELEMENT,theworm_wcolor);
+}
+
+void cleanWormTail(){
+  int tailindex;
+  // Compute tailindex
+  tailindex = (theworm_headindex + 1) % theworm_maxindex;
+
+  //Check the array of the worm elements.
+  //Is the array element at tailindex already in use?
+  //Checking either array the_wormpos_y
+  //or theworm_wormpos_x is enough.
+  if (tailindex =! UNUSED_POS_ELEM){ //ist es nicht immer used? der schwanz kommt ja eh eerst wenn das ganze array gefüllt wurde
+    //YES: place a SYMBOL_FREE_CELL at the tails positions
+    placeItem(theworm_wormpos_y[tailindex], theworm_wormpos_x[tailindex], 
+    SYMBOL_FREE_CELL, COLP_FREE_CELL);
+  } 
 }
 
 void moveWorm(enum GameStates* agame_state) {
