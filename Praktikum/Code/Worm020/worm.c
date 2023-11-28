@@ -197,6 +197,7 @@ enum ResCodes doLevel() {
     }
 
     // Show worm at its initial position
+    showWorm();
 
 
     // Display all what we have set up until now
@@ -357,7 +358,7 @@ void showWorm() {
 void cleanWormTail(){
   int tailindex;
   // Compute tailindex
-  tailindex = (theworm_headindex + 1) % theworm_maxindex;
+  tailindex = (theworm_headindex + 1) % (theworm_maxindex +1);
 
   //Check the array of the worm elements.
   //Is the array element at tailindex already in use?
@@ -378,6 +379,7 @@ void moveWorm(enum GameStates* agame_state) {
     // Check if we would leave the display if we move the worm's head according
     // to worm's last direction.
     // We are not allowed to leave the display's window.
+
     if (headpos_x < 0) {
         *agame_state = WORM_OUT_OF_BOUNDS;
     } else if (headpos_x > getLastCol() ) { 
@@ -401,7 +403,7 @@ void moveWorm(enum GameStates* agame_state) {
       //So all is well: we did not hit anything bad and did not leave the window. --> Update worm structure
       //Increment the worm_headindex
       //Go round if end of the worm is reached (ring buffer)
-      theworm_headindex = (theworm_headindex +1) % theworm_maxindex;
+      theworm_headindex = (theworm_headindex +1) % (theworm_maxindex +1);
 
       // Store new corrdinates of head element in worm structure
       theworm_wormpos_x[theworm_headindex] = headpos_x;
@@ -418,9 +420,9 @@ bool isInUseByWorm(int new_headpos_y, int new_headpos_x) {
       if(theworm_wormpos_y[i] == new_headpos_y && theworm_wormpos_x[i] == new_headpos_x) {
         collision = true; 
       } 
-      i= (i+1) % theworm_maxindex;
+      i= (i+1) % (theworm_maxindex +1);
     }
-    while (i != theworm_headindex && theworm_wormpos_x[i] != UNUSED_POS_ELEM); // die x koordinate dürfen nicht gleich sein, aber die y schon (gleiche hohe)
+    while (i != theworm_headindex ); // die x koordinate dürfen nicht gleich sein, aber die y schon (gleiche hohe)
     // return what we found out.
     return collision;
 
@@ -476,7 +478,7 @@ int main(void) {
     int res_code;         // Result code from functions
     
     //printf("press key to continue\n");
-    //getchar(); // start pogramm, give debugger a chance to attach, waits for eingabe
+    getchar(); // start pogramm, give debugger a chance to attach, waits for eingabe
 
 
     // Here we start
