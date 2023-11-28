@@ -107,7 +107,7 @@ enum ResCodes doLevel() {
     }
 
     // Show worm at its initial position
-
+    showWorm();
 
     // Display all what we have set up until now
     refresh();
