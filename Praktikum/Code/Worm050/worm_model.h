@@ -14,6 +14,23 @@
 
 #include <stdbool.h>
 #include "worm.h"
+#include "board_model.h"
+
+// A worm structure
+struct worm {
+  int maxindex; //Last usable index into the array pointed by wormpos
+  int headindex; // An index into the array of the worms head position
+                 // 0 <= headinex <= maxindex
+
+  struct pos wormpos[WORM_LENGTH]; // Array of x,y positions of all elements of the worm
+
+  // the current heading of the worm
+  // these are offsets from the set {-1,0,1}
+  int dx;
+  int dy;
+
+  enum ColorPairs wcolor; // Color of the worm
+};
 
 // Directions for the worm
 enum WormHeading {
@@ -28,13 +45,14 @@ enum WormHeading {
 };
 
 // Functions concerning the management of the worm data
-extern enum ResCodes initializeWorm(int len_max, int headpos_y, int headpos_x, enum WormHeading dir, enum ColorPairs color);
+extern enum ResCodes initializeWorm(struct worm* aworm, int len_max, struct pos headpos, enum WormHeading dir, enum ColorPairs color);
 
-extern void showWorm();
-extern void cleanWormTail();
+extern void showWorm(struct worm* aworm);
+extern void cleanWormTail(struct worm* aworm);
 
-extern void moveWorm(enum GameStates* agame_state);
-extern bool isInUseByWorm(int new_headpos_y, int new_heapos_x);
-extern void setWormHeading(enum WormHeading dir);
+extern void moveWorm(struct worm* aworm, enum GameStates* agame_state);
+extern bool isInUseByWorm(struct worm* aworm, struct pos new_headpos);
+extern void setWormHeading(struct worm* aworm, enum WormHeading dir);
+extern struct pos getWormHeadPos(struct worm* aworm);
 
 #endif  // #define _WORM_MODEL_H

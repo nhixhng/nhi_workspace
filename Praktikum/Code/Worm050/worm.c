@@ -23,7 +23,7 @@
 
 // Management of the game
 void initializeColors();
-void readUserInput(enum GameStates* agame_state );
+void readUserInput(struct worm* aworm, enum GameStates* agame_state );
 enum ResCodes doLevel();
 
 // ************************************
@@ -34,11 +34,12 @@ enum ResCodes doLevel();
 void initializeColors() {
     // Define colors of the game
     start_color();
-    init_pair(COLP_USER_WORM,    COLOR_GREEN /*@002*/,    COLOR_BLACK);
-    init_pair(COLP_FREE_CELL,    COLOR_BLACK,             COLOR_BLACK);
+    init_pair(COLP_USER_WORM,    COLOR_GREEN /*@002*/,    COLOR_BLACK); // hinmalen vom Wurm
+    init_pair(COLP_FREE_CELL,    COLOR_BLACK,             COLOR_BLACK); // wegradieren vom Wurm
+    init_pair(COLP_BARRIER,    COLOR_RED,             COLOR_BLACK;
 }
 
-void readUserInput(enum GameStates* agame_state ) {
+void readUserInput(struct worm *aworm, enum GameStates* agame_state ) {
     int ch; // For storing the key codes
 
     if ((ch = getch()) > 0) {
@@ -49,29 +50,29 @@ void readUserInput(enum GameStates* agame_state ) {
                 *agame_state = WORM_GAME_QUIT;
                 break;
             case KEY_UP :// User wants up
-                setWormHeading(WORM_UP);
+                setWormHeading(aworm, WORM_UP);
                 break;
             case KEY_DOWN :// User wants down
-                setWormHeading(WORM_DOWN); /*@012*/
+                setWormHeading(aworm, WORM_DOWN); /*@012*/
                 break;
             case KEY_LEFT :// User wants left
-                setWormHeading(WORM_LEFT); /*@012*/
+                setWormHeading(aworm, WORM_LEFT); /*@012*/
                 break;
             case KEY_RIGHT :// User wants right
-                setWormHeading(WORM_RIGHT); /*@012*/
+                setWormHeading(aworm, WORM_RIGHT); /*@012*/
                 break;
 
             case 'w' : // schräg nach links oben
-                setWormHeading(WORM_LEFT_UP);
+                setWormHeading(aworm, WORM_LEFT_UP);
                 break;
             case 'd' : // schräg nach rechts oben
-                setWormHeading(WORM_RIGHT_UP);
+                setWormHeading(aworm, WORM_RIGHT_UP);
                 break;
             case 'a' : // schräg links unten
-                setWormHeading(WORM_LEFT_DOWN);
+                setWormHeading(aworm, WORM_LEFT_DOWN);
                 break;
             case 'x' : // schräg unten rechts
-                setWormHeading(WORM_RIGHT_DOWN);
+                setWormHeading(aworm, WORM_RIGHT_DOWN);
                 break;
 
             case 's' : // User wants single step
@@ -86,37 +87,43 @@ void readUserInput(enum GameStates* agame_state ) {
 }
 
 enum ResCodes doLevel() {
+    struct worm userworm;
     enum GameStates game_state; // The current game_state
 
     enum ResCodes res_code; // Result code from functions
     bool end_level_loop;    // Indicates whether we should leave the main loop
 
-    int bottomLeft_y, bottomLeft_x;   // Start positions of the worm
+    struct pos bottomLeft;   // Start positions of the worm
 
     // At the beginnung of the level, we still have a chance to win
     game_state = WORM_GAME_ONGOING;
 
     // There is always an initialized user worm.
     // Initialize the userworm with its size, position, heading.
-    bottomLeft_y =  getLastRow();
-    bottomLeft_x =  0;
+    bottomLeft.y=  getLastRow();
+    bottomLeft.x =  0;
 
-    res_code = initializeWorm(WORM_LENGTH, bottomLeft_y, bottomLeft_x , WORM_RIGHT, COLP_USER_WORM);
+    res_code = initializeWorm(&userworm, WORM_LENGTH, bottomLeft, WORM_RIGHT, COLP_USER_WORM);
     if ( res_code != RES_OK) {
         return res_code;
     }
 
+    // Show border line in order to seperate the message area
+    showBorderLine();
+
     // Show worm at its initial position
-    showWorm();
+    showWorm(&userworm);
 
     // Display all what we have set up until now
     refresh();
 
     // Start the loop for this level
     end_level_loop = false; // Flag for controlling the main loop
+                            
     while(!end_level_loop) {        //solange es nicht gleich false ist(also true)
-        // Process optional user input
-        readUserInput(&game_state); 
+       
+      // Process optional user input
+        readUserInput(&userworm, &game_state); 
         if ( game_state == WORM_GAME_QUIT ) {
             end_level_loop = true; // @014
             continue; // Go to beginning of the loop's block and check loop condition
@@ -124,17 +131,21 @@ enum ResCodes doLevel() {
 
         // Process userworm
         // Clean the tail of the worm
-        cleanWormTail();
+        cleanWormTail(&userworm);
         // Now move the worm for one step
-        moveWorm(&game_state /*@015*/);
+        moveWorm(&userworm, &game_state /*@015*/);
         // Bail out of the loop if something bad happened
         if ( game_state != WORM_GAME_ONGOING ) {
             end_level_loop = true; // @016;
             continue; // Go to beginning of the loop's block and check loop condition
         }
+
         // Show the worm at its new position
-        showWorm();
+        showWorm(&userworm);
         // END process userworm
+
+        //Inform user about position and length of userworm in status window
+        showStatus();
 
         // Sleep a bit before we show the updated window
         napms(NAP_TIME);
@@ -152,6 +163,31 @@ enum ResCodes doLevel() {
     // However, in this version we do not yet check for the reason.
     // There is no user feedback at the moment!
 
+    switch (game_state) {
+      case WORM_GAME_QUIT:
+      // User must have typed 'q' for quit
+      showDialog("Sie haben die aktuelle Runde abgebrochen!",
+      "Bitte Taste druecken");
+      break;
+
+      case WORM_OUT_OF_BOUNDS:
+      showDialog("Sie haben das Spiel verloren,"
+      " weil sie das Spielfeld verlassen haben",
+      "Bitte Taste druecken");
+      break;
+
+      case WORM_CROSSING:
+      showDialog ("Sie haben das Spiel verloren,"
+      " weil sie einen Wurm gekreuzt haben",
+      "Bitte Taste druecken");
+      break;
+
+      default:
+      showDialog("Internet Fehler!", "Bitte Taste druecken");
+      //set error resault code. This should never happen
+      res_code = RES_INTERNAL_ERROR;
+    }
+
     // Normal exit point
     return res_code; // @017
 }
@@ -160,11 +196,11 @@ enum ResCodes doLevel() {
 // MAIN
 // ********************************************************************************************
 
-int main(void) {
-    int res_code;         // Result code from functions
+int main(void) 
+    enum ResCodes res_code;         // Result code from functions
     
     //printf("press key to continue\n");
-    //getchar(); // start pogramm, give debugger a chance to attach, waits for eingabe
+    getchar(); // start pogramm, give debugger a chance to attach, waits for eingabe
 
 
     // Here we start
@@ -176,7 +212,7 @@ int main(void) {
 
     // Check if the window is large enough to display messages in the message area
     // a has space for at least one line for the worm
-    if ( LINES < MIN_NUMBER_OF_ROWS || COLS < MIN_NUMBER_OF_COLS ) {
+    if ( LINES < ROWS_RESERVED + MIN_NUMBER_OF_ROWS || COLS < MIN_NUMBER_OF_COLS ) {
         // Since we not even have the space for displaying messages
         // we print a conventional error message via printf after
         // the call of cleanupCursesApp()

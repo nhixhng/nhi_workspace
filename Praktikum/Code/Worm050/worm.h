@@ -15,12 +15,14 @@
 enum ResCodes {         //Erstelle einen Neuen "Datentypen" , wobei RES_OK Automatisch mit 0 def wird und dann jedes weitere +1
   RES_OK,
   RES_FAILED,
+  RES_INTERNAL_ERROR,
 };
 
 // Dimensions and bounds
-#define NAP_TIME    100   // Time in milliseconds to sleep between updates of display
+#define NAP_TIME    100
+#define ROW_RESERVED 4     // Time in milliseconds to sleep between updates of display
 #define MIN_NUMBER_OF_ROWS  3   // The guaranteed number of rows available for the board
-#define MIN_NUMBER_OF_COLS 10   // The guaranteed number of columns available for the board
+#define MIN_NUMBER_OF_COLS 70   // The guaranteed number of columns available for the board
 #define WORM_LENGTH 20 // maximale Wurmlange
 
 // ### Codes for the array of possitions ###
@@ -31,10 +33,12 @@ enum ResCodes {         //Erstelle einen Neuen "Datentypen" , wobei RES_OK Autom
 enum ColorPairs {
   COLP_USER_WORM = 1,
   COLP_FREE_CELL,
+  COLOR_BARRIER,
 };
 
 // Symbols to display
 #define SYMBOL_FREE_CELL ' '
+#define SYMBOL_BARRIER '#'
 #define SYMBOL_WORM_INNER_ELEMENT '0'
 
 // Game state codes
