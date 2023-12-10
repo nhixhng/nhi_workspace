@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include "prep.h"
+#include "messages.h"
 #include "worm.h"
 #include "worm_model.h"
 #include "board_model.h" //hier werden alle Vordeklarierten Variabeln oder funktionen eingefugt, reihenfolge egal da sie vor dem aufrufen der Funktionen bereits reingeladen wurden
@@ -36,7 +37,7 @@ void initializeColors() {
     start_color();
     init_pair(COLP_USER_WORM,    COLOR_GREEN /*@002*/,    COLOR_BLACK); // hinmalen vom Wurm
     init_pair(COLP_FREE_CELL,    COLOR_BLACK,             COLOR_BLACK); // wegradieren vom Wurm
-    init_pair(COLP_BARRIER,    COLOR_RED,             COLOR_BLACK;
+    init_pair(COLP_BARRIER,    COLOR_RED,             COLOR_BLACK);
 }
 
 void readUserInput(struct worm *aworm, enum GameStates* agame_state ) {
@@ -145,7 +146,7 @@ enum ResCodes doLevel() {
         // END process userworm
 
         //Inform user about position and length of userworm in status window
-        showStatus();
+        showStatus(&userworm);
 
         // Sleep a bit before we show the updated window
         napms(NAP_TIME);
@@ -164,28 +165,28 @@ enum ResCodes doLevel() {
     // There is no user feedback at the moment!
 
     switch (game_state) {
-      case WORM_GAME_QUIT:
-      // User must have typed 'q' for quit
-      showDialog("Sie haben die aktuelle Runde abgebrochen!",
-      "Bitte Taste druecken");
-      break;
+            case WORM_GAME_QUIT:
+            // User must have typed 'q' for quit
+            showDialog("Sie haben die aktuelle Runde abgebrochen!",
+            "Bitte Taste druecken");
+            break;
 
-      case WORM_OUT_OF_BOUNDS:
-      showDialog("Sie haben das Spiel verloren,"
-      " weil sie das Spielfeld verlassen haben",
-      "Bitte Taste druecken");
-      break;
+            case WORM_OUT_OF_BOUNDS:
+            showDialog("Sie haben das Spiel verloren,"
+            " weil sie das Spielfeld verlassen haben",
+            "Bitte Taste druecken");
+            break;
 
-      case WORM_CROSSING:
-      showDialog ("Sie haben das Spiel verloren,"
-      " weil sie einen Wurm gekreuzt haben",
-      "Bitte Taste druecken");
-      break;
+            case WORM_CROSSING:
+            showDialog ("Sie haben das Spiel verloren,"
+            " weil sie einen Wurm gekreuzt haben",
+            "Bitte Taste druecken");
+            break;
 
-      default:
-      showDialog("Internet Fehler!", "Bitte Taste druecken");
-      //set error resault code. This should never happen
-      res_code = RES_INTERNAL_ERROR;
+            default:
+            showDialog("Internet Fehler!", "Bitte Taste druecken");
+            //set error resault code. This should never happen
+            res_code = RES_INTERNAL_ERROR;
     }
 
     // Normal exit point
@@ -196,7 +197,7 @@ enum ResCodes doLevel() {
 // MAIN
 // ********************************************************************************************
 
-int main(void) 
+int main(void){ 
     enum ResCodes res_code;         // Result code from functions
     
     //printf("press key to continue\n");

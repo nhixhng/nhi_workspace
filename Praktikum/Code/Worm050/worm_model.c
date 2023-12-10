@@ -169,9 +169,11 @@ void setWormHeading(struct worm* aworm, enum WormHeading dir) {
             break;
     }
     
-    // Getters
-    struct pos getWormHeadPos(struct worm* aworm) {
+// Getters
+struct pos getWormHeadPos(struct worm* aworm) {
       // structers are passed by value!
       // -> we return a copy here
       return aworm->wormpos[aworm->headindex];
+      }
 } 
+
