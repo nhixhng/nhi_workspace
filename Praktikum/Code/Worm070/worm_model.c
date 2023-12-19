@@ -71,7 +71,7 @@ void showWorm(struct board* aboard, struct worm* aworm) {
            placeItem(aboard, aworm-> wormpos[i].y, aworm-> wormpos[i].x, BC_USED_BY_WORM, SYMBOL_WORM_INNER_ELEMENT, aworm-> wcolor);
          }
       } 
-      i = (i+1) % (aworm->cur_lastindex +1);
+      i = ((i-1)+ (aworm->cur_lastindex+1)) % (aworm->cur_lastindex +1);
     }
     while (i != aworm->headindex);
 }
