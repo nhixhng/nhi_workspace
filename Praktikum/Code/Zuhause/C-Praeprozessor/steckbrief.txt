@@ -1,0 +1,8 @@
+#include "definitionen.txt"
+KOPFZEILE
+Mein Name ist : NAME
+TRENNER
+Meine Lieblingsfarbe ist: FARBE
+TRENNER
+Meine Lieblingsperson ist : PERSON
+ENDE

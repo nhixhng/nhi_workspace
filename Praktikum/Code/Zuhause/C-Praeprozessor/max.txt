@@ -1,0 +1,14 @@
+
+#ifndef _MAX
+#define _MAX
+
+#undef NAME
+#undef FARBE
+#undef PERSON
+
+#define NAME Maxi
+#define FARBE Tuerkis
+#define PERSON Nhi
+#include "steckbrief.txt"
+
+#endif
