@@ -27,15 +27,15 @@ int main(){
   vec v1,v2,v3;
 
   printf("Eingabe für den ersten Vektor\n");
-  printf("x= \n");
+  printf("x= ");
   scanf("%d", &v1.x);
-  printf("y= \n");
+  printf("y= ");
   scanf("%d", &v1.y);
 
   printf("Eingabe für den zweiten Vektor\n");
-  printf("x= \n");
+  printf("x= ");
   scanf("%d", &v2.x);
-  printf("y= \n");
+  printf("y= ");
   scanf("%d", &v2.y);
 
   v3= vec_Add(v1,v2);
