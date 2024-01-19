@@ -1,43 +1,43 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 
 typedef struct addresse{
-  char strName[20];
+  char name[10];
   int postleitzahl;
 } addresse;
 
 typedef struct student{
   char name[10];
-  char vorname[15];
   int matrikelnummer;
   addresse wohnort;
 } student;
 
-student studentEingabe(student s1){
-  printf("Bitte Name eingeben\n");
-  scanf("%s\n",(&s1)->name);
+student studenteingabe(student s1){
+  printf("Bitte Vor- und Nachname eingeben:\n");
+  scanf("%s", s1.name); //gehe zu den block s1 und wähle das array aus (Array=Addresse)
 
-  printf("Bitt Vorname eingeben\n");
-  scanf("%s\n",(&s1)->vorname);
+  printf("Bitte Matrikelnummer eingeben:\n");
+  scanf("%d", &(s1.matrikelnummer));
 
-  printf("Bitte matrikelnummer eingeben\n");
-  scanf("%d\n",(&s1)->matrikelnummer);
+  printf("Bitte straßenname eingeben:\n");
+  scanf("%s", s1.wohnort.name);
 
-  printf("Bitte Strase und nr eingeben\n");
-  scanf("%s\n",(&s1)->wohnort.strName);
-
-  printf("Bitte Postleitzahl eingeben\n");
-  scanf("%d\n",(&s1)->wohnort.postleitzahl);
-
-  printf("Student: %s, %s mit der Matrikelnuller: %010d, wohnt in der %s ,%d\n", (&s1)->vorname, (&s1)->name, (&s1)->matrikelnummer, (&s1)->wohnort.strName, (&s1)->wohnort.postleitzahl);
+  printf("Bitte Postleitzahl eingeben:\n");
+  scanf("%d", &(s1.wohnort.postleitzahl));
 
   return s1;
-}
+} 
 
 int main(){
-  student s2;
-  studentEingabe(s2);
+  student s2= {"nhi", 1, {"haslangStr",85049}};
+  printf("Name\t\tMatrikelnummer\t\tWohnort\n");
+  printf("%s\t\t%05d\t\t%s,%d\n", s2.name, s2.matrikelnummer, s2.wohnort.name, s2.wohnort.postleitzahl);
+ 
+  s2= studenteingabe(s2);
+  printf("Nach meiner Ueberschreibung:\n");
+  printf("%s\t\t%05d\t\t%s,%d\n", s2.name, s2.matrikelnummer, s2.wohnort.name, s2.wohnort.postleitzahl);
+
   return EXIT_SUCCESS;
 }
-
 

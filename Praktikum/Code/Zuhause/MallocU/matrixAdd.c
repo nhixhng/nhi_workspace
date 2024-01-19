@@ -1,115 +1,110 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int matadd( int m, int n){
-    int i,p;
-    int** m1;
-    int** m2;
-    int** m3;
-
-    m1=  malloc(m* sizeof(int));
-    if(m1== NULL){
-      printf("Fehler\n");
-      return EXIT_FAILURE;
-    }
-
-
-    for(int y=0; y < m; y++){
-      m1[y] = malloc(sizeof(int) * n);
-      if(m1[y]== NULL){
-        printf("Fehler\n");
-        return EXIT_FAILURE;
+void matAdd(int** a, int** b, int** sum, int m, int n){
+    for(int i=0; i<m; i++){
+      for (int p= 0; p<n; p++){
+        sum[i][p]= a[i][p]+ b[i][p];
       }
     }
-
-    for(i=0; i< m; i++){
-      for(p=0; p <n ; p++){
-        m1[i][p]= p+1;
-      }
-    }
-
-    for(i=0; i < m; i++){
-      for(p =0;p<n ;p ++){
-        printf("%d ", m1[i][p]);
-      }
-      printf("\n");
-    }
-
-    printf("\n");
-
-    m2=  malloc(m* sizeof(int));
-    if(m2== NULL){
-      printf("Fehler\n");
-      return EXIT_FAILURE;
-    }
-
-
-    for(int y=0; y < m; y++){
-      m2[y] = malloc(sizeof(int) * n);
-      if(m2[y]== NULL){
-        printf("Fehler\n");
-        return EXIT_FAILURE;
-      }
-    }
-
-    for(i=0; i< m; i++){
-      for(p=0; p <n ; p++){
-        m2[i][p]= p+2;
-      }
-    }
-
-    m3=  malloc(m* sizeof(int));
-    if(m3== NULL){
-      printf("Fehler\n");
-      return EXIT_FAILURE;
-    }
-
-
-    for(int y=0; y < m; y++){
-      m3[y] = malloc(sizeof(int) * n);
-      if(m3[y]== NULL){
-        printf("Fehler\n");
-        return EXIT_FAILURE;
-      }
-    }
-
-    for(i=0; i < m; i++){
-      for(p =0;p<n ;p ++){
-        printf("%d ", m2[i][p]);
-      }
-      printf("\n");
-    }
-
-    for(i=0; i < m; i++){
-      for(p =0;p<n ;p ++){
-        m3[i][p]= m2[i][p] + m1[i][p];
-      }
-    }
-
-    printf("\n");
-
-    for(i=0; i < m; i++){
-      for(p =0;p<n ;p ++){
-        printf("%d ", m3[i][p]);
-      }
-      printf("\n");
-    }
-
-    free(m1);
-    free(m2);
-    free(m3);
 }
 
-int main(){
-    
-    int m,n;
-    printf("gebe die Größe deiner Mamtrix an\n");
-    printf("m = \n");
-    scanf("%d", &m);
-    printf("n = \n");
-    scanf("%d", &n);
-
-    matadd(m,n);
-    return EXIT_SUCCESS;
+void druck(int** a, int m, int n){
+  for(int i=0; i<m; i++){
+      for(int p=0; p<n; p++){
+        printf("%04d\t",a[i][p]);
+      }
+      printf("\n");
+    }
+  printf("\n");
 }
 
+void initialisiere(int** a, int m, int n){
+    for(int i=0; i<m; i++){
+      for(int p=0; p<n; p++){
+        scanf("%d",&(a[i][p]));
+      }
+    }
+}
+
+void free2(int** a, int m){
+  for(int i=0; i<m; i++){
+    free(a[i]);
+  }
+  free(a);
+}
+
+int main(int argc, char * argv[]){
+  if(argc != 3){
+    printf("Fehler! Pogramm mit Zahlen als Dimension der Matrix aufurufen: Beispiel bin/add 4 4\n");
+    return EXIT_FAILURE;
+  }
+
+  int m= atoi(argv[1]);
+  int n= atoi(argv[2]);
+
+  //Speicherreservierng für Erste Matrix 
+  int** m1= malloc(sizeof(int*)*m);
+  if(m1==NULL){
+    printf("Out of Memory1\n");
+    return EXIT_FAILURE;
+  }
+  for(int i=0; i<m;i++){
+    m1[i]= malloc(sizeof(int)*n);
+    if(m1[i]==NULL){
+      printf("Out of Memory1.1\n");
+      return EXIT_FAILURE;
+    }
+  }
+
+  //Speicher für array 2
+  int** m2= malloc(sizeof(int*)*m);
+  if(m2==NULL){
+    printf("Out of Memory2\n");
+    return EXIT_FAILURE;
+  }
+  for(int i=0; i<m;i++){
+    m2[i]= malloc(sizeof(int)*n);
+    if(m2[i]==NULL){
+      printf("Out of Memory2.2\n");
+      return EXIT_FAILURE;
+    }
+  }
+  
+  //Speicher für array 3 
+  int** m3= malloc(sizeof(int*)*m);
+  if(m3==NULL){
+    printf("Out of Memory3\n");
+    return EXIT_FAILURE;
+  }
+  for(int i=0; i<m;i++){
+    m3[i]= malloc(sizeof(int)*n);
+    if(m3[i]==NULL){
+      printf("Out of Memory3.1\n");
+      return EXIT_FAILURE;
+    }
+  }
+
+  printf("Zahlen für deine erste Matrix\n");
+  initialisiere(m1,m,n);
+
+  printf("Zahlen für deine zweite Matrix\n");
+  initialisiere(m2,m,n);
+
+  printf("Matrix 1:\n");
+  druck(m1,m,n);
+
+  printf("Matrix 2:\n");
+  druck(m2,m,n);
+
+  matAdd(m1,m2,m3,m,n);
+ 
+  printf("Ergebnis von der Addition: \n");
+  druck(m3,m,n);
+
+  free2(m1,m);
+  free2(m2,m);
+  free2(m3,m);
+
+  return EXIT_SUCCESS;
+}
