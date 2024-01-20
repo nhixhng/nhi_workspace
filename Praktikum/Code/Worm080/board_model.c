@@ -13,6 +13,7 @@
 #include "board_model.h"
 #include "worm.h"
 #include "messages.h"
+#include <stdlib.h>
 
 // Place an item onto the curses display.
 void placeItem(struct board* aboard, int y, int x, enum BoardCodes board_code, chtype symbol, enum ColorPairs color_pair) {
@@ -26,20 +27,38 @@ void placeItem(struct board* aboard, int y, int x, enum BoardCodes board_code, c
 }
 
 enum ResCodes initializeBoard(struct board* aboard) {
-    // Check dimension of the board
-    if (COLS < MIN_NUMBER_OF_COLS || LINES < MIN_NUMBER_OF_ROWS + ROWS_RESERVED) {
+    int y;
+    aboard-> last_row = LINES - ROWS_RESERVED - 1;
+    aboard-> last_col = COLS -1;
+
+    if (aboard-> last_col < MIN_NUMBER_OF_COLS -1 || aboard->last_row < MIN_NUMBER_OF_ROWS -1 ) {
        char buf[100];
        sprintf(buf, "Das Fenster ist zu klein: wir benötigen %dx%d", MIN_NUMBER_OF_COLS, MIN_NUMBER_OF_ROWS + ROWS_RESERVED);
        showDialog(buf, "Bitte eine Taste druecken");
        return RES_FAILED;
     }
 
-    //Maximal index of a row
-    aboard-> last_row = MIN_NUMBER_OF_ROWS -1;
+    aboard->cells = malloc(sizeof(enum BoardCodes*) * (LINES- ROWS_RESERVED));
+    if(aboard->cells == NULL){
+    showDialog("Abbruch: zu wenig speicher","Bitte eine Taste druecken");
+    exit(RES_FAILED);
+    }
 
-    //Maximal index of a column
-    aboard-> last_col = MIN_NUMBER_OF_COLS -1;
+    for(y=0; y < (LINES- ROWS_RESERVED); y++){
+    aboard->cells[y] = malloc(sizeof(enum BoardCodes)* COLS);
+    if(aboard->cells[y]==NULL){
+    showDialog("Abbruch: zu wenig speicher","Bitte eine Taste druecken");
+    exit(RES_FAILED);
+    }
+    }
+
     return RES_OK;
+}
+void cleanupBoard(struct board* aboard){
+  for(int y=0; y <(LINES- ROWS_RESERVED);y++){
+    free(aboard->cells[y]);
+  }
+  free(aboard->cells);
 }
 
 enum ResCodes initializeLevel (struct board* aboard) {
@@ -61,11 +80,6 @@ enum ResCodes initializeLevel (struct board* aboard) {
       addch(SYMBOL_BARRIER);
       attroff(COLOR_PAIR(COLP_BARRIER));
     } 
-
-    // Draw a line to signale the rightmost column of the board
-    for(y=0; y<= aboard-> last_row; y++) {
-      placeItem(aboard, y , aboard-> last_col, BC_BARRIER, SYMBOL_BARRIER, COLP_BARRIER);
-    }
 
     // Barriers: use a loop, one on left side, other right side
     for(y=2; y < 15; y++) {

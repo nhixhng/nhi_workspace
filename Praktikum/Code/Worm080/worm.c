@@ -15,6 +15,7 @@
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
+#include "options.h"
 
 #include "prep.h"
 #include "messages.h"
@@ -25,7 +26,7 @@
 // Management of the game
 void initializeColors();
 void readUserInput(struct worm* aworm, enum GameStates* agame_state );
-enum ResCodes doLevel();
+enum ResCodes doLevel(struct game_options* somegops);
 
 // ************************************
 // Management of the game
@@ -94,7 +95,7 @@ void readUserInput(struct worm *aworm, enum GameStates* agame_state ) {
     return;
 }
 
-enum ResCodes doLevel() {
+enum ResCodes doLevel(struct game_options* somegops) {
     struct worm userworm;
     struct board theboard;
     enum GameStates game_state; // The current game_state
@@ -166,7 +167,7 @@ enum ResCodes doLevel() {
         showStatus(&theboard, &userworm);
 
         // Sleep a bit before we show the updated window
-        napms(NAP_TIME);
+        napms(somegops->nap_time);
 
         // Display all the updates
         refresh();
@@ -226,6 +227,7 @@ enum ResCodes doLevel() {
             //set error resault code. This should never happen
             res_code = RES_INTERNAL_ERROR;
     }
+    cleanupBoard(&theboard);
 
     // Normal exit point
     return res_code; // @017
@@ -234,8 +236,24 @@ enum ResCodes doLevel() {
 // ********************************************************************************************
 // MAIN
 // ********************************************************************************************
+enum ResCodes playGame(int argc, char* argv[]){
+  enum ResCodes res_codes;
+  struct game_options thegops;
 
-int main(void){ 
+  res_codes= readCommandLineOptions(&thegops, argc, argv);
+  if( res_codes!= RES_OK){
+    return res_codes;
+  }
+  
+  if(thegops.start_single_step){
+    nodelay(stdscr,FALSE);
+  }
+
+  res_codes= doLevel(&thegops);
+  return res_codes;
+}
+
+int main(int argc, char* argv[]){ 
     enum ResCodes res_code;         // Result code from functions
     
     //printf("press key to continue\n");
@@ -260,7 +278,7 @@ int main(void){
                 MIN_NUMBER_OF_COLS, MIN_NUMBER_OF_ROWS );
         res_code = RES_FAILED;
     } else {
-        res_code = doLevel();
+        res_code = playGame(argc,argv);
         cleanupCursesApp();
     }
 
