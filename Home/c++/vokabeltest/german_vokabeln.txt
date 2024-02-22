@@ -1,3 +1,4 @@
-Papa
-Mama
-Oma
+papa
+mama
+haus
+oma
