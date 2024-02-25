@@ -43,8 +43,8 @@ int main(){
   printf("Vektor V2= %02d\t%02d\n", v2.x, v2.y);
   printf("(%02d, %02d) + (%02d, %02d) = (%02d,%02d)\n",v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
 
-  v2= vec_Neg(v2);
-  printf("Vektor V2= %02d\t%02d negiert\n", v2.x, v2.y);
+  v3= vec_Neg(v3);
+  printf("Vektor V2= %02d\t%02d negiert\n", v3.x, v3.y);
 
   return EXIT_SUCCESS;
 }
