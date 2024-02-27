@@ -2,3 +2,10 @@ papa
 mama
 haus
 oma
+haus
+papa
+mama
+haus
+oma
+haus
+katze
